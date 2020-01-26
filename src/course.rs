@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
+use actix_web::{get, post, web, HttpResponse, Responder};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
@@ -20,7 +20,7 @@ pub fn list_courses() -> impl Responder {
 
 #[get("/next")]
 pub fn next_lesson() -> impl Responder {
-    let course: Course = unimplemented!();
+    let course = icelandic();
     let lesson_idx = rand::thread_rng().gen_range(0, course.lessons.len());
 
     HttpResponse::Ok().json(
@@ -76,7 +76,7 @@ pub struct Challenge {
 
 impl Challenge {
     /// Verifies the correctness of the given answer to this challenge
-    pub fn verify(&self, response: &ChallengeResponse) -> ChallengeResult {
+    pub fn verify(&self, _response: &ChallengeResponse) -> ChallengeResult {
         ChallengeResult::Correct
     }
 }

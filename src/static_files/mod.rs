@@ -6,6 +6,11 @@ pub fn index() -> impl Responder {
     HttpResponse::Ok().body(include_str!("html/index.html"))
 }
 
+#[get("/application.css")]
+pub fn application_css() -> impl Responder {
+    HttpResponse::Ok().body(include_str!("css/application.css"))
+}
+
 #[get("/application.js")]
 pub fn application_js() -> impl Responder {
     HttpResponse::Ok().body(include_str!("js/application.js"))

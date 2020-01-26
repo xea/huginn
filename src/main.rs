@@ -14,7 +14,8 @@ fn main() {
             .service(web::scope("/courses").service(list_courses))
             .service(
                 web::scope("/static")
-                    // Application JS
+                    // Application
+                    .service(application_css)
                     .service(application_js)
                     // Frameworks
                     .service(bootstrap_css)
