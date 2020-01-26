@@ -13,7 +13,8 @@ let app = new Vue({
     data: {
         userInput: {
             text: "",
-            disabled: false
+            disabled: false,
+            submitted: false
         }
     },
     computed: {
@@ -23,30 +24,39 @@ let app = new Vue({
 
         isEmpty: function() {
             return !this.hasContent;
-        }
-
+        },
     },
     methods: {
         handleInput: function (event) {
             if (event.key === "Enter") {
                 event.preventDefault();
 
-                if (app.hasContent) {
-                    //app.userInput.disabled = true;
-                    document.getElementById("user-input").disabled = true;
-                    document.getElementById("next-challenge").focus();
-                    document.getElementById("buttonbar").classList.add("answer-incorrect");
-                }
+                this.submitInput();
 
                 return false;
             }
         },
         nextChallenge: function(event) {
-            app.userInput.text = "";
+            this.userInput.text = "";
+            /*
             document.getElementById("buttonbar").classList.remove("answer-correct");
             document.getElementById("buttonbar").classList.remove("answer-incorrect");
             document.getElementById("user-input").disabled = false;
             document.getElementById("user-input").focus();
+             */
+        },
+        submitInput: function() {
+            if (!this.userInput.submitted && this.hasContent) {
+                this.userInput.disabled = true;
+                this.userInput.submitted = true;
+
+                this.$refs.nextChallenge.focus();
+                /*
+                document.getElementById("user-input").disabled = true;
+                document.getElementById("next-challenge").focus();
+                document.getElementById("buttonbar").classList.add("answer-incorrect");
+                 */
+            }
         }
     }
 });

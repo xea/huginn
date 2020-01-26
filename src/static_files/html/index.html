@@ -7,38 +7,42 @@
         <title>Project Húginn</title>
 
         <!--<link rel="stylesheet" href="/static/bootstrap.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />-->
-        <link rel="stylesheet" href="/static/bulma.css" />
+        <!--<link rel="stylesheet" href="/static/bulma.css" />-->
         <link rel="stylesheet" href="/static/application.css" />
 
         <!--<script src="/static/bootstrap.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>-->
         <script src="/static/vue.js"></script>
     </head>
     <body v-on:keyup="bodyInputHandler">
-        <div id="app" class="container vertical-filler">
-            <!-- Header -->
-            <div class="titlebar">
-                <span>Project Húginn</span>
-            </div>
+        <div id="app" class="container">
+            <div class="app-container">
+                <div class="app-header">
+                    <span>Project Húginn</span>
+                </div>
 
-            <!-- Main area -->
-            <div class="center-stage">
-                <div class="challenge">
-                    <div class="challenge-content">
-                        <div class="challenge-align">
-                            <div class="task">Translate this into Icelandic</div>
-                            <question>What is your name?</question>
-                            <div class="user-input-holder">
-                                <textarea id="user-input" rows="3" v-model="userInput.text" v-on:keypress="handleInput" v-focus class="textarea user-input" placeholder="Type your answer here" ></textarea>
+                <div class="app-main ">
+                    <div class="app-center-column">
+                        <div class="challenge-container">
+                            <div class="challenge-task">Translate this into Icelandic</div>
+
+                            <div class="challenge-question">Eg heiti Olafr</div>
+
+                            <div class="challenge-answer">
+                                <textarea id="user-input" rows="3" v-model="userInput.text" v-on:keypress="handleInput" v-focus class="textarea user-input" v-bind:disabled="userInput.disabled" placeholder="Type your answer here" ></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Bottom row -->
-            <div id="buttonbar" class="buttonbar">
-                <div class="verify-pos">
-                    <button id="next-challenge" class="verify-input" v-on:click="nextChallenge" v-on:keypress.enter="nextChallenge" v-bind:disabled="isEmpty">Verify</button>
+                <div id="footer" class="app-footer hero">
+                    <div class="buttonbar">
+                        <div class="button-next" v-if="userInput.submitted">
+                            <button id="next-challenge" ref="nextChallenge" class="next-button" v-on:click="nextChallenge" v-on:keypress.enter="nextChallenge" v-bind:disabled="isEmpty">Continue</button>
+                        </div>
+                        <div class="button-verify" v-else>
+                            <button id="verify-challenge" ref="verifyChallenge" class="verify-input" v-on:click="submitInput" v-on:keypress.enter="submitInput" v-bind:disabled="isEmpty">Verify</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
