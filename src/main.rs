@@ -20,6 +20,7 @@ fn main() {
                     // Frameworks
                     .service(bootstrap_css)
                     .service(bootstrap_js)
+                    .service(bulma_css)
                     .service(vue_js),
             )
             .service(index)

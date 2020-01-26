@@ -26,6 +26,11 @@ pub fn bootstrap_js() -> impl Responder {
     HttpResponse::Ok().body(include_str!("js/bootstrap.min.js"))
 }
 
+#[get("/bulma.css")]
+pub fn bulma_css() -> impl Responder {
+    HttpResponse::Ok().body(include_str!("css/bulma.min.css"))
+}
+
 #[get("/vue.js")]
 pub fn vue_js() -> impl Responder {
     if DEBUG_MODE {

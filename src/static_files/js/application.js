@@ -4,25 +4,50 @@ Vue.directive('focus', {
     }
 });
 
-Vue.component('challenge', {
-    template: '<div class="challenge"><div class="challenge-content"><slot></slot></div></div>'
-});
-
-Vue.component('task', {
-    template: '<div class="task"><slot></slot></div>'
-});
-
 Vue.component('question', {
     template: '<div class="question-text"><slot></slot></div>'
-});
-
-Vue.component('user-input', {
-    template: '<div class="form-group user-input-holder"><textarea rows="3" v-focus class="form-control user-input" placeholder="Type your answer here"></textarea></div>'
 });
 
 let app = new Vue({
     el: "#app",
     data: {
+        userInput: {
+            text: "",
+            disabled: false
+        }
+    },
+    computed: {
+        hasContent: function() {
+            return this.userInput.text.length > 0;
+        },
+
+        isEmpty: function() {
+            return !this.hasContent;
+        }
+
+    },
+    methods: {
+        handleInput: function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+
+                if (app.hasContent) {
+                    //app.userInput.disabled = true;
+                    document.getElementById("user-input").disabled = true;
+                    document.getElementById("next-challenge").focus();
+                    document.getElementById("buttonbar").classList.add("answer-incorrect");
+                }
+
+                return false;
+            }
+        },
+        nextChallenge: function(event) {
+            app.userInput.text = "";
+            document.getElementById("buttonbar").classList.remove("answer-correct");
+            document.getElementById("buttonbar").classList.remove("answer-incorrect");
+            document.getElementById("user-input").disabled = false;
+            document.getElementById("user-input").focus();
+        }
     }
 });
 
