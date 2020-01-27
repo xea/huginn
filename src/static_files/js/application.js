@@ -13,8 +13,11 @@ let app = new Vue({
     data: {
         userInput: {
             text: "",
-            disabled: false,
-            submitted: false
+            verified: false
+        },
+        challenge: {
+            responseSuccessful: false,
+            responseFailed: false
         }
     },
     computed: {
@@ -25,39 +28,38 @@ let app = new Vue({
         isEmpty: function() {
             return !this.hasContent;
         },
+        answerCorrect: function() {
+            return this.challenge.responseSuccessful;
+        },
+        answerIncorrect: function() {
+            return this.challenge.responseFailed;
+        }
+
     },
     methods: {
         handleInput: function (event) {
             if (event.key === "Enter") {
                 event.preventDefault();
 
-                this.submitInput();
-
-                return false;
+                this.verifyInput(event);
             }
+        },
+        verifyInput: function(event) {
+            this.userInput.verified = true;
+            this.challenge.responseSuccessful = true;
+
+            this.$refs.verifyInput.focus();
         },
         nextChallenge: function(event) {
+            this.userInput.verified = false;
             this.userInput.text = "";
-            /*
-            document.getElementById("buttonbar").classList.remove("answer-correct");
-            document.getElementById("buttonbar").classList.remove("answer-incorrect");
-            document.getElementById("user-input").disabled = false;
-            document.getElementById("user-input").focus();
-             */
-        },
-        submitInput: function() {
-            if (!this.userInput.submitted && this.hasContent) {
-                this.userInput.disabled = true;
-                this.userInput.submitted = true;
 
-                this.$refs.nextChallenge.focus();
-                /*
-                document.getElementById("user-input").disabled = true;
-                document.getElementById("next-challenge").focus();
-                document.getElementById("buttonbar").classList.add("answer-incorrect");
-                 */
-            }
+            this.challenge.responseSuccessful = false;
+            this.challenge.responseFailed = false;
+
+            this.$refs.userInput.focus();
         }
+
     }
 });
 

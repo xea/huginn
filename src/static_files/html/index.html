@@ -28,19 +28,19 @@
                             <div class="challenge-question">Eg heiti Olafr</div>
 
                             <div class="challenge-answer">
-                                <textarea id="user-input" rows="3" v-model="userInput.text" v-on:keypress="handleInput" v-focus class="textarea user-input" v-bind:disabled="userInput.disabled" placeholder="Type your answer here" ></textarea>
+                                <textarea id="user-input" ref="userInput" rows="3" v-model="userInput.text" v-on:keypress="handleInput" v-focus class="textarea user-input" v-bind:disabled="userInput.submitted" placeholder="Type your answer here" ></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="footer" class="app-footer hero">
+                <div id="footer" class="app-footer hero" v-bind:class="{ correct: answerCorrect }" v-bind:class="{ incorrect: answerIncorrect }">
                     <div class="buttonbar">
-                        <div class="button-next" v-if="userInput.submitted">
+                        <div class="button-next" v-if="userInput.verified">
                             <button id="next-challenge" ref="nextChallenge" class="next-button" v-on:click="nextChallenge" v-on:keypress.enter="nextChallenge" v-bind:disabled="isEmpty">Continue</button>
                         </div>
                         <div class="button-verify" v-else>
-                            <button id="verify-challenge" ref="verifyChallenge" class="verify-input" v-on:click="submitInput" v-on:keypress.enter="submitInput" v-bind:disabled="isEmpty">Verify</button>
+                            <button id="verify-input" ref="verifyInput" class="verify-input" v-on:click="verifyInput" v-on:keypress.enter="verifyInput" v-bind:disabled="isEmpty">Verify</button>
                         </div>
                     </div>
                 </div>
