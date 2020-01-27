@@ -1,4 +1,4 @@
-use crate::course::{list_courses, next_lesson};
+use crate::course::{list_courses, next_lesson, submit_answer, show_course};
 use actix_web::{web, App, HttpServer};
 use static_files::*;
 
@@ -10,8 +10,15 @@ pub const DEBUG_MODE: bool = true;
 fn main() {
     let run = HttpServer::new(|| {
         App::new()
-            .service(web::scope("/course").service(next_lesson))
+            /*
+            .service(web::scope("/course")
+                .service(next_lesson)
+                .service(submit_answer))
             .service(web::scope("/courses").service(list_courses))
+            */
+            .service(web::scope("/course")
+                .service(list_courses)
+                .service(show_course))
             .service(
                 web::scope("/static")
                     // Application

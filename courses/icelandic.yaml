@@ -1,6 +1,7 @@
 ---
-id: icelandic
-title: Icelandic language
+description:
+  id: icelandic
+  title: Icelandic language
 lessons:
   - challenges:
       - question: I am

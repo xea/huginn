@@ -6,17 +6,31 @@ pub fn icelandic() -> Course {
     serde_yaml::from_str(include_str!("../courses/icelandic.yaml")).unwrap()
 }
 
+pub fn all_courses() -> Vec<Course> {
+    vec![ icelandic() ]
+}
+
 #[get("/list")]
 pub fn list_courses() -> impl Responder {
-    let courses = [icelandic()];
-
-    let courses_data = courses
-        .iter()
-        .map(|course| (course.id.as_str(), course.title.as_str()))
-        .collect::<Vec<(&str, &str)>>();
+    let courses = all_courses();
+    let courses_data = courses.iter()
+        .map(|course| &course.description)
+        .collect::<Vec<&CourseDescription>>();
 
     HttpResponse::Ok().json(courses_data)
 }
+
+#[get("/show/{course_id}")]
+pub fn show_course(course_id: web::Path<String>) -> impl Responder {
+    let courses = all_courses();
+    let course = courses.iter()
+        .filter(|course| course.description.id == course_id.as_str())
+        .next();
+
+    HttpResponse::Ok().json(course)
+}
+
+// ----------- Here be dragons
 
 #[get("/next")]
 pub fn next_lesson() -> impl Responder {
@@ -39,6 +53,7 @@ pub fn next_lesson() -> impl Responder {
 
 #[post("/submit")]
 pub fn submit_answer(_response: web::Json<ChallengeResponse>) -> impl Responder {
+    println!("Got request yay");
     let response = ChallengeResult::Accepted {
         explanation: "You made 1 mistake".to_string(),
     };
@@ -50,9 +65,14 @@ pub fn submit_answer(_response: web::Json<ChallengeResponse>) -> impl Responder 
 /// Eg. 'Single-variable calculus' or 'Icelandic language'.
 #[derive(Serialize, Deserialize)]
 pub struct Course {
+    pub description: CourseDescription,
+    pub lessons: Vec<Lesson>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CourseDescription {
     pub id: String,
     pub title: String,
-    pub lessons: Vec<Lesson>,
 }
 
 /// A `Lesson` is a collection of challenges organised around a specific topic, eg. 'multiplying natural numbers'

@@ -13,6 +13,7 @@ let app = new Vue({
     data: {
         userInput: {
             text: "",
+            submitted: false,
             verified: false
         },
         challenge: {
@@ -45,12 +46,30 @@ let app = new Vue({
             }
         },
         verifyInput: function(event) {
-            this.userInput.verified = true;
-            this.challenge.responseSuccessful = true;
+            this.userInput.submitted = true;
 
-            this.$refs.verifyInput.focus();
+            let request = {
+                course_id: "test-course",
+                challenge_id: "test-lesson",
+                answer: this.userInput.text.trim()
+            };
+
+            fetch("/course/submit", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(request)
+            })
+                .then((response) => {
+                    this.userInput.verified = true;
+                    this.challenge.responseSuccessful = true;
+
+                    this.$refs.verifyInput.focus();
+                });
         },
         nextChallenge: function(event) {
+            this.userInput.submitted = false;
             this.userInput.verified = false;
             this.userInput.text = "";
 
