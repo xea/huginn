@@ -1,3 +1,5 @@
+use crate::challenge::{ChallengeResponse, ChallengeResult};
+use crate::lesson::Lesson;
 use actix_web::{get, post, web, HttpResponse, Responder};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -7,13 +9,14 @@ pub fn icelandic() -> Course {
 }
 
 pub fn all_courses() -> Vec<Course> {
-    vec![ icelandic() ]
+    vec![icelandic()]
 }
 
 #[get("/list")]
 pub fn list_courses() -> impl Responder {
     let courses = all_courses();
-    let courses_data = courses.iter()
+    let courses_data = courses
+        .iter()
         .map(|course| &course.description)
         .collect::<Vec<&CourseDescription>>();
 
@@ -23,7 +26,8 @@ pub fn list_courses() -> impl Responder {
 #[get("/show/{course_id}")]
 pub fn show_course(course_id: web::Path<String>) -> impl Responder {
     let courses = all_courses();
-    let course = courses.iter()
+    let course = courses
+        .iter()
         .filter(|course| course.description.id == course_id.as_str())
         .next();
 
@@ -73,48 +77,4 @@ pub struct Course {
 pub struct CourseDescription {
     pub id: String,
     pub title: String,
-}
-
-/// A `Lesson` is a collection of challenges organised around a specific topic, eg. 'multiplying natural numbers'
-/// or 'learning personal pronouns'.
-#[derive(Serialize, Deserialize)]
-pub struct Lesson {
-    pub challenges: Vec<Challenge>,
-}
-
-/// A `Challenge` is a concrete question that is displayed to the user who is requested to answer it.
-///
-/// Challenges may have 'accepted' and 'allowed' answers to them. 'Accepted' answers are ones that are
-/// perfectly correct and expected. In contrast to this, 'allowed' answers are technically correct but
-/// they are either not following the question entirely or contain minor mistakes (eg. typos, synonyms, etc)
-#[derive(Serialize, Deserialize)]
-pub struct Challenge {
-    pub question: String,
-    pub accepted_answers: Vec<String>,
-    pub allowed_answers: Vec<(String, String)>,
-}
-
-impl Challenge {
-    /// Verifies the correctness of the given answer to this challenge
-    pub fn verify(&self, _response: &ChallengeResponse) -> ChallengeResult {
-        ChallengeResult::Correct
-    }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct ChallengeResponse {
-    course_id: String,
-    challenge_id: String,
-    answer: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum ChallengeResult {
-    /// The answer was perfectly correct and no correction was necessary
-    Correct,
-    /// The answer was accepted but had minor issues that had to be fixed. The mistakes are explained
-    /// in the response
-    Accepted { explanation: String },
-    /// The answer contained major mistakes and therefore couldn't be accepted
-    Incorrect,
 }
