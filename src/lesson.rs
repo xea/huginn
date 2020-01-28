@@ -1,15 +1,15 @@
 use crate::challenge::Challenge;
-use actix_web::{get, web, Responder};
+use actix_web::{get, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
 #[get("/list")]
-pub fn list_lessons() -> impl Responder {
-    unimplemented!()
+pub async fn list_lessons() -> impl Responder {
+    HttpResponse::Ok().body("asdfasdf")
 }
 
 #[get("/show/{lesson_id}")]
-pub fn show_lesson(lesson_id: web::Path<String>) -> impl Responder {
-    unimplemented!()
+pub async fn show_lesson(lesson_id: web::Path<String>) -> impl Responder {
+    HttpResponse::Ok().body("asdfasdf")
 }
 
 /// A `Lesson` is a collection of challenges organised around a specific topic, eg. 'multiplying natural numbers'

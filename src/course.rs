@@ -13,7 +13,7 @@ pub fn all_courses() -> Vec<Course> {
 }
 
 #[get("/list")]
-pub fn list_courses() -> impl Responder {
+pub async fn list_courses() -> impl Responder {
     let courses = all_courses();
     let courses_data = courses
         .iter()
@@ -24,7 +24,7 @@ pub fn list_courses() -> impl Responder {
 }
 
 #[get("/show/{course_id}")]
-pub fn show_course(course_id: web::Path<String>) -> impl Responder {
+pub async fn show_course(course_id: web::Path<String>) -> impl Responder {
     let courses = all_courses();
     let course = courses
         .iter()
@@ -37,7 +37,7 @@ pub fn show_course(course_id: web::Path<String>) -> impl Responder {
 // ----------- Here be dragons
 
 #[get("/next")]
-pub fn next_lesson() -> impl Responder {
+pub async fn next_lesson() -> impl Responder {
     let course = icelandic();
     let lesson_idx = rand::thread_rng().gen_range(0, course.lessons.len());
 
@@ -56,11 +56,9 @@ pub fn next_lesson() -> impl Responder {
 }
 
 #[post("/submit")]
-pub fn submit_answer(_response: web::Json<ChallengeResponse>) -> impl Responder {
+pub async fn submit_answer(_response: web::Json<ChallengeResponse>) -> impl Responder {
     println!("Got request yay");
-    let response = ChallengeResult::Accepted {
-        explanation: "You made 1 mistake".to_string(),
-    };
+    let response = ChallengeResult::Accepted;
 
     HttpResponse::Ok().json(response)
 }
