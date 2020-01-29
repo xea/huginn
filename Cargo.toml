@@ -8,10 +8,10 @@ edition = "2018"
 
 [dependencies]
 actix-files = "*"
-actix-rt = "*"
+actix-rt = "1"
 actix-service = "*"
 actix-session = "*"
-actix-web = "2.*"
+actix-web = "2"
 rand = "*"
 serde = "*"
 serde_yaml = "*"

@@ -1,9 +1,18 @@
 use actix_session::Session;
-use actix_web::{post, HttpResponse, Responder};
+use actix_web::{get, post, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
-#[post("/challenge/verify")]
-pub async fn verify_answer(session: Session) -> impl Responder {
+#[get("/next")]
+pub async fn next_challenge(session: Session) -> impl Responder {
+    session.set("accepted_answers", [
+        "toc-toc"
+    ]);
+
+    HttpResponse::Ok().json(())
+}
+
+#[post("/verify")]
+pub async fn verify_answer(solution: web::Json<ChallengeSolution>, session: Session) -> impl Responder {
     let r = session.get::<String>("");
 
     let response = "";
@@ -18,31 +27,32 @@ pub async fn verify_answer(session: Session) -> impl Responder {
 /// they are either not following the question entirely or contain minor mistakes (eg. typos, synonyms, etc)
 #[derive(Serialize, Deserialize)]
 pub struct Challenge {
-    pub challenge_text: String,
-    pub accepted_answers: Vec<String>,
-    pub allowed_answers: Vec<(String, String)>,
+    pub task: String,
+    pub question: String
 }
 
 impl Challenge {
     /// Verifies the correctness of the given answer to this challenge
-    pub fn verify(&self, response: &ChallengeResponse) -> ChallengeResult {
-        ChallengeResult::Correct
+    pub fn verify(&self, solution: &ChallengeSolution) -> ChallengeResult {
+        ChallengeResult {
+            correct: true,
+            explanation: None
+        }
     }
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ChallengeResponse {
-    course_id: String,
-    challenge_id: String,
-    answer: String,
+pub struct ChallengeSolution {
+    user_input: String,
 }
 
+/// Represents the outcome of a solution along with some explanation if necessary.
+///
+/// Explanations might point out minor mistakes should they be present in the submitted answer.
 #[derive(Serialize, Deserialize)]
-pub enum ChallengeResult {
-    /// The answer was perfectly correct and no correction was necessary
-    Correct,
-    /// The answer was accepted but had minor issues were found
-    Accepted,
-    /// The answer contained major mistakes and therefore couldn't be accepted
-    Incorrect,
+pub struct ChallengeResult {
+    correct: bool,
+    explanation: Option<String>
 }
+
+

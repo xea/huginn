@@ -1,4 +1,3 @@
-use crate::challenge::{ChallengeResponse, ChallengeResult};
 use crate::lesson::Lesson;
 use actix_web::{get, post, web, HttpResponse, Responder};
 use rand::Rng;
@@ -55,14 +54,6 @@ pub async fn next_lesson() -> impl Responder {
     )
 }
 
-#[post("/submit")]
-pub async fn submit_answer(_response: web::Json<ChallengeResponse>) -> impl Responder {
-    println!("Got request yay");
-    let response = ChallengeResult::Accepted;
-
-    HttpResponse::Ok().json(response)
-}
-
 /// A `Course` is a collection of lessons that teach a broader range of subjects around a central theme.
 /// Eg. 'Single-variable calculus' or 'Icelandic language'.
 #[derive(Serialize, Deserialize)]
@@ -71,6 +62,7 @@ pub struct Course {
     pub lessons: Vec<Lesson>,
 }
 
+/// Provides
 #[derive(Serialize, Deserialize)]
 pub struct CourseDescription {
     pub id: String,

@@ -3,24 +3,9 @@ description:
   id: icelandic
   title: Icelandic language
 lessons:
-  - challenges:
-      - question: I am
-        accepted_answers:
-          - ég er
-        allowed_answers: []
-      - question: you are
-        accepted_answers:
-          - þú ert
-        allowed_answers: []
-      - question: he is
-        accepted_answers:
-          - hann er
-        allowed_answers: []
-      - question: she is
-        accepted_answers:
-          - hún er
-        allowed_answers: []
-      - question: we are saying it
-        accepted_answers:
-          - við erum að segja það
-        allowed_answers: []
+  - description:
+      id: basics
+      title: Language basics
+    challenges:
+      - task: Do something fancy
+        question: in blue pants

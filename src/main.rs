@@ -1,8 +1,10 @@
-use crate::course::{list_courses, show_course};
-use crate::lesson::{list_lessons, show_lesson};
+use crate::course::{list_courses, show_course, Course, CourseDescription};
+use crate::lesson::{list_lessons, show_lesson, Lesson, LessonDescription};
 use actix_session::CookieSession;
 use actix_web::{middleware, web, App, HttpServer};
 use static_files::*;
+use std::io::BufWriter;
+use crate::challenge::{Challenge, next_challenge, verify_answer};
 
 mod challenge;
 mod course;
@@ -13,6 +15,8 @@ pub const DEBUG_MODE: bool = true;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    pregenerate_data();
+
     HttpServer::new(|| {
         App::new()
             .wrap(middleware::Logger::default())
@@ -26,6 +30,11 @@ async fn main() -> std::io::Result<()> {
                 web::scope("/lesson")
                     .service(list_lessons)
                     .service(show_lesson),
+            )
+            .service(
+                web::scope("/challenge")
+                    .service(next_challenge)
+                    .service(verify_answer)
             )
             .service(
                 web::scope("/static")
@@ -44,4 +53,31 @@ async fn main() -> std::io::Result<()> {
     .unwrap()
     .run()
     .await
+}
+
+fn pregenerate_data() {
+    let icelandic = Course {
+        description: CourseDescription {
+            id: "icelandic".to_string(),
+            title: "Icelandic language".to_string()
+        },
+        lessons: vec![
+            Lesson {
+                description: LessonDescription {
+                    id: "basics".to_string(),
+                    title: "Language basics".to_string()
+                },
+                challenges: vec![
+                    Challenge {
+                        task: "Do something fancy".to_string(),
+                        question: "in blue pants".to_string()
+                    }
+                ]
+            }
+        ]
+    };
+
+    let yaml = serde_yaml::to_string(&icelandic).unwrap();
+
+    println!("{}", yaml);
 }
