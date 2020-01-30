@@ -1,11 +1,13 @@
 use actix_session::Session;
 use actix_web::{get, post, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use std::time::Instant;
+use chrono::Utc;
 
 #[get("/next")]
-pub async fn next_challenge(session: Session) -> impl Responder {
-    session.set("accepted_answers", [
-        "toc-toc"
+pub async fn next_batch(session: Session) -> impl Responder {
+    session.set("security_token", [
+        Utc::now().to_rfc2822()
     ]);
 
     HttpResponse::Ok().json(())
@@ -28,7 +30,8 @@ pub async fn verify_answer(solution: web::Json<ChallengeSolution>, session: Sess
 #[derive(Serialize, Deserialize)]
 pub struct Challenge {
     pub task: String,
-    pub question: String
+    pub question: String,
+    pub accepted: Vec<String>
 }
 
 impl Challenge {
@@ -39,8 +42,16 @@ impl Challenge {
             explanation: None
         }
     }
+
+    pub fn generate_stuff(&self) -> () {
+        for accepted in self.accepted {
+            let normalized = accepted;
+
+        }
+    }
 }
 
+/// A solution to a challenge as submitted by the user.
 #[derive(Serialize, Deserialize)]
 pub struct ChallengeSolution {
     user_input: String,
@@ -55,4 +66,7 @@ pub struct ChallengeResult {
     explanation: Option<String>
 }
 
+#[cfg(test)]
+mod tests {
 
+}

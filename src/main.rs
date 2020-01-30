@@ -4,7 +4,7 @@ use actix_session::CookieSession;
 use actix_web::{middleware, web, App, HttpServer};
 use static_files::*;
 use std::io::BufWriter;
-use crate::challenge::{Challenge, next_challenge, verify_answer};
+use crate::challenge::{Challenge, next_batch, verify_answer};
 
 mod challenge;
 mod course;
@@ -33,7 +33,7 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/challenge")
-                    .service(next_challenge)
+                    .service(next_batch)
                     .service(verify_answer)
             )
             .service(
@@ -70,7 +70,10 @@ fn pregenerate_data() {
                 challenges: vec![
                     Challenge {
                         task: "Do something fancy".to_string(),
-                        question: "in blue pants".to_string()
+                        question: "in blue pants".to_string(),
+                        accepted: vec![
+                            "This is my solution!".to_string()
+                        ]
                     }
                 ]
             }
