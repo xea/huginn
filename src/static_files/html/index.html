@@ -1,51 +1,14 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Húginn</title>
+</head>
+<body>
+    <img src="/static/svg/iceland.svg" alt="Icelandic" width="400" height="300" />
 
-        <title>Project Húginn</title>
-
-        <!--<link rel="stylesheet" href="/static/bootstrap.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />-->
-        <!--<link rel="stylesheet" href="/static/bulma.css" />-->
-        <link rel="stylesheet" href="/static/application.css" />
-
-        <!--<script src="/static/bootstrap.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>-->
-        <script src="/static/vue.js"></script>
-    </head>
-    <body v-on:keyup="bodyInputHandler">
-        <div id="app" class="container">
-            <div class="app-container">
-                <div class="app-header">
-                    <span>Project Húginn</span>
-                </div>
-
-                <div class="app-main ">
-                    <div class="app-center-column">
-                        <div class="challenge-container">
-                            <div class="challenge-task">Translate this into Icelandic</div>
-
-                            <div class="challenge-question">Eg heiti Olafr</div>
-
-                            <div class="challenge-answer">
-                                <textarea id="user-input" ref="userInput" rows="3" v-model="userInput.text" v-on:keypress="handleInput" v-focus class="textarea user-input" v-bind:disabled="userInput.submitted" placeholder="Type your answer here" ></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="footer" class="app-footer hero" v-bind:class="{ correct: answerCorrect }" v-bind:class="{ incorrect: answerIncorrect }">
-                    <div class="buttonbar">
-                        <div class="button-next" v-if="userInput.verified">
-                            <button id="next-challenge" ref="nextChallenge" class="next-button" v-on:click="nextChallenge" v-on:keypress.enter="nextChallenge" v-bind:disabled="isEmpty">Continue</button>
-                        </div>
-                        <div class="button-verify" v-else>
-                            <button id="verify-input" ref="verifyInput" class="verify-input" v-on:click="verifyInput" v-on:keypress.enter="verifyInput" v-bind:disabled="isEmpty">Verify</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script src="/static/application.js"></script>
-    </body>
+    <footer>
+        <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+    </footer>
+</body>
 </html>

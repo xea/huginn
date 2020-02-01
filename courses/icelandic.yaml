@@ -3,9 +3,8 @@ description:
   id: icelandic
   title: Icelandic language
 lessons:
-  - description:
-      id: basics
-      title: Language basics
+    id: basics
+    title: Language basics
     challenges:
       - task: Do something fancy
         question: in blue pants

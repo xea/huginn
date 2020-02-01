@@ -1,21 +1,44 @@
 use actix_session::Session;
 use actix_web::{get, post, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
-use std::time::Instant;
 use chrono::Utc;
+use c2_chacha::ChaCha20;
+use c2_chacha::stream_cipher::{NewStreamCipher, SyncStreamCipher};
+use sha2::{Sha256, Digest};
+use rand::Rng;
 
 #[get("/next")]
 pub async fn next_batch(session: Session) -> impl Responder {
-    session.set("security_token", [
+    // Set "security token"
+    let _ = session.set("security_token", [
         Utc::now().to_rfc2822()
     ]);
 
-    HttpResponse::Ok().json(())
+    // Generate a batch
+    let batch_size = 10;
+
+    let mut response = vec![];
+
+    for _ in 0..batch_size {
+        let challenge = Challenge {
+            task: "Translate this".to_string(),
+            question: "How far can an European swallow fly?".to_string(),
+            accepted: vec![
+                "Not very far".to_string()
+            ]
+        };
+
+        let encrypted = challenge.encrypt();
+
+        response.push(encrypted);
+    }
+
+    HttpResponse::Ok().json(response)
 }
 
 #[post("/verify")]
-pub async fn verify_answer(solution: web::Json<ChallengeSolution>, session: Session) -> impl Responder {
-    let r = session.get::<String>("");
+pub async fn verify_answer(_solution: web::Json<ChallengeSolution>, session: Session) -> impl Responder {
+    let _r = session.get::<String>("");
 
     let response = "";
 
@@ -36,17 +59,51 @@ pub struct Challenge {
 
 impl Challenge {
     /// Verifies the correctness of the given answer to this challenge
-    pub fn verify(&self, solution: &ChallengeSolution) -> ChallengeResult {
+    pub fn _verify(&self, _solution: &ChallengeSolution) -> ChallengeResult {
         ChallengeResult {
             correct: true,
             explanation: None
         }
     }
 
-    pub fn generate_stuff(&self) -> () {
-        for accepted in self.accepted {
-            let normalized = accepted;
+    pub fn encrypt(&self) -> Challenge {
+        let mut encrypted = vec![];
 
+        for accepted in &self.accepted {
+            let mut normalized = accepted.to_lowercase()
+                .trim()
+                .chars()
+                .filter(|e| e.is_alphanumeric())
+                .collect::<String>();
+
+            // Calculate hash for the normalised version
+            let mut hasher = Sha256::new();
+            hasher.input(normalized.as_str());
+
+            let hash = hasher.result().to_vec();
+
+            // Generate random 8-byte (u64) IV
+            let iv = rand::thread_rng().gen_range(0, u64::max_value()).to_ne_bytes();
+            let mut iv_hex = base64::encode(&iv);
+
+            // Use hash as encryption key
+            let key = hash.as_slice();
+
+            let mut cipher = ChaCha20::new_var(key, &iv).unwrap();
+            let mut buffer = accepted.bytes().collect::<Vec<u8>>();
+
+            cipher.apply_keystream(&mut buffer);
+
+            iv_hex.push_str(":");
+            iv_hex.push_str(base64::encode(buffer.as_slice()).as_str());
+
+            encrypted.push(iv_hex);
+        }
+
+        Challenge {
+            task: self.task.to_string(),
+            question: self.question.to_string(),
+            accepted: encrypted
         }
     }
 }

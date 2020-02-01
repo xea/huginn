@@ -1,9 +1,8 @@
-use crate::course::{list_courses, show_course, Course, CourseDescription};
+use crate::course::{list_courses, show_course, Course};
 use crate::lesson::{list_lessons, show_lesson, Lesson, LessonDescription};
 use actix_session::CookieSession;
 use actix_web::{middleware, web, App, HttpServer};
 use static_files::*;
-use std::io::BufWriter;
 use crate::challenge::{Challenge, next_batch, verify_answer};
 
 mod challenge;
@@ -16,6 +15,8 @@ pub const DEBUG_MODE: bool = true;
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     pregenerate_data();
+
+    env_logger::init();
 
     HttpServer::new(|| {
         App::new()
@@ -45,7 +46,10 @@ async fn main() -> std::io::Result<()> {
                     .service(bootstrap_css)
                     .service(bootstrap_js)
                     .service(bulma_css)
-                    .service(vue_js),
+                    .service(vue_js)
+                    // SVG images
+                    .service(images_svg),
+
             )
             .service(index)
     })
@@ -57,10 +61,8 @@ async fn main() -> std::io::Result<()> {
 
 fn pregenerate_data() {
     let icelandic = Course {
-        description: CourseDescription {
-            id: "icelandic".to_string(),
-            title: "Icelandic language".to_string()
-        },
+        id: "icelandic".to_string(),
+        title: "Icelandic language".to_string(),
         lessons: vec![
             Lesson {
                 description: LessonDescription {

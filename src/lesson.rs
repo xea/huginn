@@ -15,8 +15,8 @@ pub async fn list_lessons() -> impl Responder {
 }
 
 #[get("/show/{lesson_id}")]
-pub async fn show_lesson(lesson_id: web::Path<String>) -> impl Responder {
-    let courses = all_courses();
+pub async fn show_lesson(_lesson_id: web::Path<String>) -> impl Responder {
+    let _courses = all_courses();
 
     HttpResponse::Ok().body("asdfasdf")
 }

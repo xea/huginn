@@ -1,5 +1,5 @@
 use crate::lesson::Lesson;
-use actix_web::{get, post, web, HttpResponse, Responder};
+use actix_web::{get, web, HttpResponse, Responder};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
@@ -14,12 +14,8 @@ pub fn all_courses() -> Vec<Course> {
 #[get("/list")]
 pub async fn list_courses() -> impl Responder {
     let courses = all_courses();
-    let courses_data = courses
-        .iter()
-        .map(|course| &course.description)
-        .collect::<Vec<&CourseDescription>>();
 
-    HttpResponse::Ok().json(courses_data)
+    HttpResponse::Ok().json(courses)
 }
 
 #[get("/show/{course_id}")]
@@ -27,7 +23,7 @@ pub async fn show_course(course_id: web::Path<String>) -> impl Responder {
     let courses = all_courses();
     let course = courses
         .iter()
-        .filter(|course| course.description.id == course_id.as_str())
+        .filter(|course| course.id == course_id.as_str())
         .next();
 
     HttpResponse::Ok().json(course)
@@ -58,13 +54,10 @@ pub async fn next_lesson() -> impl Responder {
 /// Eg. 'Single-variable calculus' or 'Icelandic language'.
 #[derive(Serialize, Deserialize)]
 pub struct Course {
-    pub description: CourseDescription,
+    pub id: String,
+    pub title: String,
+
+    #[serde(skip)]
     pub lessons: Vec<Lesson>,
 }
 
-/// Provides
-#[derive(Serialize, Deserialize)]
-pub struct CourseDescription {
-    pub id: String,
-    pub title: String,
-}
