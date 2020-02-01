@@ -12,6 +12,7 @@ actix-rt = "1"
 actix-service = "*"
 actix-session = "*"
 actix-web = "2"
+aes = "*"
 base64 = "*"
 c2-chacha = "*"
 chrono = { version = "*", features = [ "serde"] }

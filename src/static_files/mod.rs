@@ -1,5 +1,5 @@
 use crate::DEBUG_MODE;
-use actix_web::{get, HttpResponse, Responder, web};
+use actix_web::{get, web, HttpResponse, Responder};
 
 #[get("/")]
 pub async fn index() -> impl Responder {
@@ -42,5 +42,6 @@ pub async fn vue_js() -> impl Responder {
 
 #[get("/svg/{image}")]
 pub async fn images_svg(_image_name: web::Path<String>) -> impl Responder {
-    HttpResponse::Ok().body(include_str!("img/080-iceland.svg"))
+    //HttpResponse::Ok().body(include_str!("img/080-iceland.svg"))
+    HttpResponse::Ok().body("SVG")
 }
