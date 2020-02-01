@@ -1,11 +1,10 @@
 use actix_session::Session;
 use actix_web::{get, post, web, HttpResponse, Responder};
-use c2_chacha::stream_cipher::{NewStreamCipher, SyncStreamCipher};
-use c2_chacha::ChaCha20;
 use chrono::Utc;
-use rand::Rng;
+use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use aes::Aes128;
 
 #[get("/next")]
 pub async fn next_batch(session: Session) -> impl Responder {
@@ -69,47 +68,11 @@ impl Challenge {
         let mut encrypted = vec![];
 
         for accepted in &self.accepted {
-            let normalized = accepted
-                .to_lowercase()
-                .trim()
-                .chars()
-                .filter(|e| e.is_alphanumeric())
-                .collect::<String>();
+            let normalized = Challenge::normalize(accepted.as_str());
 
-            // Calculate hash for the normalised version
-            let mut hasher = Sha256::new();
-            hasher.input(normalized.as_str());
+            let encrypted_answer = Challenge::encrypt_raw(normalized);
 
-            let hash = hasher.result().to_vec();
-
-            // Generate random 8-byte (u64) IV
-            let iv = rand::thread_rng()
-                .gen_range(0, u64::max_value())
-                .to_ne_bytes();
-            let mut iv_hex = base64::encode(&iv);
-
-            // Use hash as encryption key
-            let key = hash.as_slice();
-
-            let mut cipher = ChaCha20::new_var(key, &iv).unwrap();
-            let mut buffer = format!("{:04}:{}", accepted.as_bytes().len(), accepted);
-
-            // Pad the buffer to a multiple of block size
-            let padded_block_size = 64;
-            let padded_length = ((buffer.bytes().len() + padded_block_size) / padded_block_size)
-                * padded_block_size;
-            let padding = format!("{:len$}", "", len = padded_length - buffer.len());
-
-            buffer.push_str(padding.as_str());
-            let mut data = buffer.bytes().collect::<Vec<u8>>();
-
-            // Encrypt the expended buffer
-            cipher.apply_keystream(&mut data);
-
-            iv_hex.push_str(":");
-            iv_hex.push_str(base64::encode(data.as_slice()).as_str());
-
-            encrypted.push(iv_hex);
+            encrypted.push(encrypted_answer);
         }
 
         Challenge {
@@ -117,6 +80,55 @@ impl Challenge {
             question: self.question.to_string(),
             accepted: encrypted,
         }
+    }
+
+    fn normalize(input: &str) -> String {
+        input
+            .to_lowercase()
+            .trim()
+            .chars()
+            .filter(|e| e.is_alphanumeric())
+            .collect::<String>()
+    }
+
+    fn encrypt_raw(input: String) -> String {
+        Self::encrypt_hashxor(input)
+    }
+
+    fn encrypt_hashxor(input: String) -> String {
+        // Calculate hash for the normalised version
+        let mut hasher = Sha256::new();
+        hasher.input(input.as_str());
+
+        let hash = hasher.result().to_vec();
+
+        // Generate random 8-byte (u64) IV
+        let iv = rand::thread_rng()
+            .gen_range(0, u64::max_value())
+            .to_ne_bytes();
+        let mut iv_hex = base64::encode(&iv);
+
+        // Use hash as encryption key
+        let key = hash.as_slice();
+
+        let mut buffer = format!("{:04}:{}", input.as_bytes().len(), input);
+
+        // Pad the buffer to a multiple of block size
+        let padded_block_size = 32;
+        let padded_length =
+            ((buffer.bytes().len() + padded_block_size) / padded_block_size) * padded_block_size;
+        let padding = format!("{:len$}", "", len = padded_length - buffer.len());
+
+        buffer.push_str(padding.as_str());
+        // Data is the final version of our input to be encrypted. It is in the format of <length>:<content><padding>
+        let mut data = buffer.bytes().collect::<Vec<u8>>();
+
+        // ----------------------
+
+        let cipher = Cbc<Aes128, Pkcs7>::new();
+
+        // ----------------------
+        String::from_utf8(data).unwrap()
     }
 }
 
