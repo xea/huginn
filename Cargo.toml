@@ -19,5 +19,4 @@ chrono = { version = "*", features = [ "serde"] }
 env_logger = "*"
 rand = "*"
 serde = "*"
-serde_yaml = "*"
 sha2 = "*"

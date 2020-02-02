@@ -1,6 +1,6 @@
-use crate::challenge::{next_batch, verify_answer, Challenge};
-use crate::course::{list_courses, show_course, Course};
-use crate::lesson::{list_lessons, show_lesson, Lesson, LessonDescription};
+use crate::challenge::{next_batch, verify_answer};
+use crate::course::{list_courses, show_course};
+use crate::lesson::{list_lessons, show_lesson};
 use actix_session::CookieSession;
 use actix_web::{middleware, web, App, HttpServer};
 use static_files::*;
@@ -14,8 +14,6 @@ pub const DEBUG_MODE: bool = true;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    pregenerate_data();
-
     env_logger::init();
 
     HttpServer::new(|| {
@@ -54,26 +52,4 @@ async fn main() -> std::io::Result<()> {
     .unwrap()
     .run()
     .await
-}
-
-fn pregenerate_data() {
-    let icelandic = Course {
-        id: "icelandic".to_string(),
-        title: "Icelandic language".to_string(),
-        lessons: vec![Lesson {
-            description: LessonDescription {
-                id: "basics".to_string(),
-                title: "Language basics".to_string(),
-            },
-            challenges: vec![Challenge {
-                task: "Do something fancy".to_string(),
-                question: "in blue pants".to_string(),
-                accepted: vec!["This is my solution!".to_string()],
-            }],
-        }],
-    };
-
-    let yaml = serde_yaml::to_string(&icelandic).unwrap();
-
-    println!("{}", yaml);
 }

@@ -4,7 +4,11 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 pub fn icelandic() -> Course {
-    serde_yaml::from_str(include_str!("../courses/icelandic.yaml")).unwrap()
+    Course {
+        id: "icelandic".to_string(),
+        title: "Icelandic Language".to_string(),
+        lessons: vec![],
+    }
 }
 
 pub fn all_courses() -> Vec<Course> {
@@ -60,4 +64,3 @@ pub struct Course {
     #[serde(skip)]
     pub lessons: Vec<Lesson>,
 }
-
