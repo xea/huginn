@@ -14,6 +14,7 @@ actix-session = "*"
 actix-web = "2"
 aes = "*"
 base64 = "*"
+block-modes = "*"
 chrono = { version = "*", features = [ "serde"] }
 env_logger = "*"
 rand = "*"

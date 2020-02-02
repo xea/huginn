@@ -1,10 +1,13 @@
 use actix_session::Session;
 use actix_web::{get, post, web, HttpResponse, Responder};
+use aes::Aes128;
+use block_modes::block_padding::Pkcs7;
+use block_modes::BlockMode;
+use block_modes::Cbc;
 use chrono::Utc;
 use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use aes::Aes128;
 
 #[get("/next")]
 pub async fn next_batch(session: Session) -> impl Responder {
@@ -12,7 +15,7 @@ pub async fn next_batch(session: Session) -> impl Responder {
     let _ = session.set("security_token", [Utc::now().to_rfc2822()]);
 
     // Generate a batch
-    let batch_size = 10;
+    let batch_size = 1;
 
     let mut response = vec![];
 
@@ -92,21 +95,20 @@ impl Challenge {
     }
 
     fn encrypt_raw(input: String) -> String {
-        Self::encrypt_hashxor(input)
+        Self::encrypt_aes(input)
     }
 
-    fn encrypt_hashxor(input: String) -> String {
+    fn encrypt_aes(input: String) -> String {
         // Calculate hash for the normalised version
         let mut hasher = Sha256::new();
         hasher.input(input.as_str());
 
-        let hash = hasher.result().to_vec();
+        // We only need the first 16 bytes of the 32 byte long Sha256 hash
+        let hash = hasher.result()[0..16].to_vec();
 
-        // Generate random 8-byte (u64) IV
-        let iv = rand::thread_rng()
-            .gen_range(0, u64::max_value())
-            .to_ne_bytes();
-        let mut iv_hex = base64::encode(&iv);
+        // Generate random 16-byte (u128) IV
+        let iv = thread_rng().gen_range(0, u128::max_value()).to_ne_bytes();
+        let mut iv_b64 = base64::encode(&iv);
 
         // Use hash as encryption key
         let key = hash.as_slice();
@@ -121,14 +123,19 @@ impl Challenge {
 
         buffer.push_str(padding.as_str());
         // Data is the final version of our input to be encrypted. It is in the format of <length>:<content><padding>
-        let mut data = buffer.bytes().collect::<Vec<u8>>();
+        let data = buffer.bytes().collect::<Vec<u8>>();
+
+        // ----------------------
+        let cipher = Cbc::<Aes128, Pkcs7>::new_var(key, &iv).unwrap();
+
+        let ciphertext = cipher.encrypt_vec(data.as_slice());
 
         // ----------------------
 
-        let cipher = Cbc<Aes128, Pkcs7>::new();
+        iv_b64.push(':');
+        iv_b64.push_str(base64::encode(ciphertext.as_slice()).as_str());
 
-        // ----------------------
-        String::from_utf8(data).unwrap()
+        iv_b64
     }
 }
 
