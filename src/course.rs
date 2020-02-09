@@ -1,3 +1,4 @@
+use crate::challenge::Challenge;
 use crate::lesson::Lesson;
 use actix_web::{get, web, HttpResponse, Responder};
 use rand::Rng;
@@ -7,7 +8,18 @@ pub fn icelandic() -> Course {
     Course {
         id: "icelandic".to_string(),
         title: "Icelandic Language".to_string(),
-        lessons: vec![],
+        lessons: vec![Lesson {
+            id: "basics".to_string(),
+            title: "Language basics".to_string(),
+            challenges: vec![Challenge {
+                task: "Answer this question".to_string(),
+                question: "This is the question".to_string(),
+                accepted: vec![
+                    "Accepted string".to_string(),
+                    "Another accepted string".to_string(),
+                ],
+            }],
+        }],
     }
 }
 
@@ -20,6 +32,11 @@ pub async fn list_courses() -> impl Responder {
     let courses = all_courses();
 
     HttpResponse::Ok().json(courses)
+}
+
+#[get("/{course_id}")]
+pub async fn course_summary(course_id: web::Path<String>) -> impl Responder {
+    HttpResponse::Ok().body(include_str!("static_files/html/course_show.html"))
 }
 
 #[get("/show/{course_id}")]

@@ -1,4 +1,4 @@
-use crate::challenge::{next_batch, verify_answer};
+use crate::challenge::next_batch;
 use crate::course::{list_courses, show_course};
 use crate::lesson::{list_lessons, show_lesson};
 use actix_session::CookieSession;
@@ -21,6 +21,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             // TODO The private key used for the cookie session needs a proper value.
             .wrap(CookieSession::private(&[0; 32]))
+            /*
             .service(
                 web::scope("/course")
                     .service(list_courses)
@@ -31,11 +32,7 @@ async fn main() -> std::io::Result<()> {
                     .service(list_lessons)
                     .service(show_lesson),
             )
-            .service(
-                web::scope("/challenge")
-                    .service(next_batch)
-                    .service(verify_answer),
-            )
+            .service(web::scope("/challenge").service(next_batch))
             .service(
                 web::scope("/static")
                     // Application
@@ -46,6 +43,7 @@ async fn main() -> std::io::Result<()> {
                     // SVG images
                     .service(images_svg),
             )
+            */
             .service(index)
     })
     .bind("127.0.0.1:8088")

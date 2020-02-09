@@ -1,15 +1,15 @@
 use crate::challenge::Challenge;
+use crate::course::all_courses;
 use actix_web::{get, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
-use crate::course::all_courses;
 
 #[get("/list")]
 pub async fn list_lessons() -> impl Responder {
     let courses = all_courses();
-    let lessons = courses .iter()
+    let lessons = courses
+        .iter()
         .flat_map(|course| &course.lessons)
-        .map(|lesson| &lesson.description)
-        .collect::<Vec<&LessonDescription>>();
+        .collect::<Vec<&Lesson>>();
 
     HttpResponse::Ok().json(lessons)
 }
@@ -25,12 +25,8 @@ pub async fn show_lesson(_lesson_id: web::Path<String>) -> impl Responder {
 /// or 'learning personal pronouns'.
 #[derive(Serialize, Deserialize)]
 pub struct Lesson {
-    pub description: LessonDescription,
-    pub challenges: Vec<Challenge>,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct LessonDescription {
     pub id: String,
     pub title: String,
+    #[serde(skip)]
+    pub challenges: Vec<Challenge>,
 }
