@@ -76,6 +76,7 @@ let app = new Vue({
             this.challenge.responseSuccessful = false;
             this.challenge.responseFailed = false;
 
+            // Not sure if this is the best way to deal with focuses
             this.$refs.userInput.disabled = false;
             this.$refs.userInput.focus();
         }
