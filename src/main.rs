@@ -4,9 +4,11 @@ use crate::lesson::{list_lessons, show_lesson};
 use actix_session::CookieSession;
 use actix_web::{middleware, web, App, HttpServer};
 use static_files::*;
+use crate::exercise::exercise_skill;
 
 mod challenge;
 mod course;
+mod exercise;
 mod lesson;
 mod static_files;
 
@@ -21,6 +23,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             // TODO The private key used for the cookie session needs a proper value.
             .wrap(CookieSession::private(&[0; 32]))
+            .service(exercise_skill)
             /*
             .service(
                 web::scope("/course")
@@ -33,6 +36,7 @@ async fn main() -> std::io::Result<()> {
                     .service(show_lesson),
             )
             .service(web::scope("/challenge").service(next_batch))
+            */
             .service(
                 web::scope("/static")
                     // Application
@@ -43,7 +47,6 @@ async fn main() -> std::io::Result<()> {
                     // SVG images
                     .service(images_svg),
             )
-            */
             .service(index)
     })
     .bind("127.0.0.1:8088")
