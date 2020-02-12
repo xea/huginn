@@ -84,3 +84,59 @@ let app = new Vue({
     }
 });
 
+
+let crypto = window.crypto.subtle;
+
+function stringToBuffer(input) {
+    let buffer = new ArrayBuffer(input.length);
+    let view = new Uint8Array(buffer);
+
+    for (var i = 0; i < input.length; i++) {
+        view[i] = input.charCodeAt(i);
+    }
+
+    return buffer;
+}
+
+async function calculateHash(inputStr) {
+    return crypto.digest({ name: "SHA-256" }, stringToBuffer(inputStr))
+        .then(function(hash) {
+            return hash.slice(0, 16);
+        })
+        .catch(function(error) {
+            console.log("Hash error: " + error);
+        });
+}
+
+async function importKey(key) {
+    return crypto.importKey("raw", key, { name: "AES-CBC" }, true, [ "encrypt", "decrypt" ])
+        .catch(function(error) {
+            console.log("Import key error: " + error);
+        });
+}
+
+async function encrypt(ivStr, keyBuffer, data) {
+    return crypto.encrypt({ name: "AES-CBC", iv: stringToBuffer(ivStr) }, keyBuffer, stringToBuffer(data))
+        .catch(function(error) {
+            console.log("Encryption error: " + error);
+        });
+}
+
+async function decrypt(ivStr, keyBuffer, data) {
+    return crypto.decrypt({ name: "AES-CBC", iv: stringToBuffer(ivStr) }, keyBuffer, stringToBuffer(data))
+        .catch(function(error) {
+            console.log("Decryption error: " + error);
+        });
+
+}
+
+async function decryptAnswer(normalizedText, iv64, ciphertext64) {
+    let iv = atob(iv64);
+    let ciphertext = atob(ciphertext64);
+
+    let hash = await calculateHash(normalizedText);
+    let key = await importKey(hash);
+
+    return await decrypt(iv, key, ciphertext);
+}
+
