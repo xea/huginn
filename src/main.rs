@@ -42,6 +42,8 @@ async fn main() -> std::io::Result<()> {
                     // Application
                     .service(application_css)
                     .service(application_js)
+                    // Theme
+                    .service(nord_css)
                     // Frameworks
                     .service(vue_js)
                     // SVG images

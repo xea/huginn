@@ -26,6 +26,11 @@ pub async fn bootstrap_js() -> impl Responder {
     HttpResponse::Ok().body(include_str!("js/bootstrap.min.js"))
 }
 
+#[get("/nord.css")]
+pub async fn nord_css() -> impl Responder {
+    HttpResponse::Ok().body(include_str!("css/nord.css"))
+}
+
 #[get("/bulma.css")]
 pub async fn bulma_css() -> impl Responder {
     HttpResponse::Ok().body(include_str!("css/bulma.min.css"))
