@@ -17,6 +17,8 @@ let app = new Vue({
             verified: false
         },
         challenge: {
+            task: "Translate this into Icelandic",
+            question: undefined,
             responseSuccessful: false,
             responseFailed: false
         }
@@ -29,13 +31,22 @@ let app = new Vue({
         isEmpty: function() {
             return !this.hasContent;
         },
+
         answerCorrect: function() {
             return this.challenge.responseSuccessful;
         },
+
         answerIncorrect: function() {
             return this.challenge.responseFailed;
-        }
+        },
 
+        nextQuestion: function() {
+            if (this.challenge.question === undefined) {
+                fetch("/exercise/icelandic/basics/next").then(function(response) {
+
+                })
+            }
+        }
     },
     methods: {
         handleInput: function (event) {
@@ -91,7 +102,7 @@ function stringToBuffer(input) {
     let buffer = new ArrayBuffer(input.length);
     let view = new Uint8Array(buffer);
 
-    for (var i = 0; i < input.length; i++) {
+    for (let i = 0; i < input.length; i++) {
         view[i] = input.charCodeAt(i);
     }
 
@@ -130,13 +141,13 @@ async function decrypt(ivStr, keyBuffer, data) {
 
 }
 
-async function decryptAnswer(normalizedText, iv64, ciphertext64) {
+async function decryptAnswer(normalizedText, iv64, cipherText64) {
     let iv = atob(iv64);
-    let ciphertext = atob(ciphertext64);
+    let cipherText = atob(cipherText64);
 
     let hash = await calculateHash(normalizedText);
     let key = await importKey(hash);
 
-    return await decrypt(iv, key, ciphertext);
+    return await decrypt(iv, key, cipherText);
 }
 
