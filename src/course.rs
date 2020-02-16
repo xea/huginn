@@ -11,14 +11,23 @@ pub fn icelandic() -> Course {
         lessons: vec![Lesson {
             id: "basics".to_string(),
             title: "Language basics".to_string(),
-            challenges: vec![Challenge {
-                task: "Answer this question".to_string(),
-                question: "This is the question".to_string(),
-                accepted: vec![
-                    "Accepted string".to_string(),
-                    "Another accepted string".to_string(),
-                ],
-            }],
+            challenges: vec![
+                Challenge {
+                    task: "Answer this question".to_string(),
+                    question: "This is the question".to_string(),
+                    accepted: vec![
+                        "Accepted string".to_string(),
+                        "Another accepted string".to_string(),
+                    ],
+                },
+                Challenge {
+                    task: "Translate this into English".to_string(),
+                    question: "Það voru hús hér".to_string(),
+                    accepted: vec![
+                        "There were houses here".to_string()
+                    ]
+                }
+            ],
         }],
     }
 }

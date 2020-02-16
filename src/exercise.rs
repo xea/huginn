@@ -7,5 +7,5 @@ pub async fn exercise_skill(skill_id: web::Path<(String, String)>) -> impl Respo
 
 #[get("/exercise/{course}/{skill}/next")]
 pub async fn load_next_batch(skill_id: web::Path<(String, String)>) -> impl Responder {
-
+    HttpResponse::Ok().json("asdfasf")
 }
