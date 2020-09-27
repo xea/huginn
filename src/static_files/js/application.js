@@ -1,102 +1,170 @@
 "use strict";
 
-Vue.directive('focus', {
-    inserted: function(element) {
-        element.focus();
-    }
+Vue.component('app-header', {
+    template: `
+  <div class="header">Project Húginn</div>`
+});
+
+Vue.component('exercise', {
+    template: `
+  <div class="exercise">
+  	<div class="exercise-box">
+    	<slot></slot>
+    </div>
+  </div>`
+});
+
+Vue.component('task', {
+    template: `
+  <div class="task"><slot></slot></div>`
 });
 
 Vue.component('question', {
-    template: '<div class="question-text"><slot></slot></div>'
+    template: `
+  <div class="question"><slot></slot></div>`
 });
 
-let app = new Vue({
-    el: "#app",
-    data: {
-        userInput: {
-            text: "",
-            submitted: false,
-            verified: false
-        },
-        challenge: {
-            task: "Translate this into Icelandic",
-            question: undefined,
-            responseSuccessful: false,
-            responseFailed: false
-        }
+Vue.component('user-input', {
+    inject: [ 'challenge' ],
+    data: function() {
+        return {
+            userInput: ""
+        };
     },
-    computed: {
-        hasContent: function() {
-            return this.userInput.text.length > 0;
-        },
-
-        isEmpty: function() {
-            return !this.hasContent;
-        },
-
-        answerCorrect: function() {
-            return this.challenge.responseSuccessful;
-        },
-
-        answerIncorrect: function() {
-            return this.challenge.responseFailed;
-        },
-
-        nextQuestion: function() {
-            if (this.challenge.question === undefined) {
-                fetch("/exercise/icelandic/basics/next").then(function(response) {
-
-                })
-            }
-        }
-    },
+    template: `
+  <div class="user-input">
+  	<textarea rows="5" ref="userInput" v-model="userInput" @keypress="handleKey" :disabled="challenge.submitted" placeholder="Type your answer"></textarea>
+  </div>`,
     methods: {
-        handleInput: function (event) {
-            if (event.key === "Enter") {
+        handleKey: function(event) {
+            if (event.key === 'Enter') {
                 event.preventDefault();
-
-                this.verifyInput(event);
+                this.challenge.submitted = true;
+                this.$emit('answer:submitted', this.userInput);
             }
         },
-        verifyInput: function(event) {
-            this.userInput.submitted = true;
-
-            let request = {
-                course_id: "test-course",
-                challenge_id: "test-lesson",
-                answer: this.userInput.text.trim()
-            };
-
-            fetch("/course/submit", {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(request)
-            })
-                .then((response) => {
-                    this.userInput.verified = true;
-                    this.challenge.responseSuccessful = true;
-
-                    this.$refs.verifyInput.focus();
-                });
-        },
-        nextChallenge: function(event) {
-            this.userInput.submitted = false;
-            this.userInput.verified = false;
-            this.userInput.text = "";
-
-            this.challenge.responseSuccessful = false;
-            this.challenge.responseFailed = false;
-
-            // Not sure if this is the best way to deal with focuses
+        reset: function() {
+            this.userInput = "";
+            this.challenge.submitted = false;
             this.$refs.userInput.disabled = false;
             this.$refs.userInput.focus();
         }
-
     }
 });
 
+Vue.component('app-footer', {
+    template: `
+  <div ref="footer" class="footer"><slot></slot></div>`
+});
+
+Vue.component('correct-answer', {
+    methods: {
+        refocus: function() {
+            this.$nextTick(() => this.$refs.btnNext.focus());
+        }
+    },
+    template: `
+  <div class="correct-answer">
+  	<div class="button-bar">
+			<div class="button-wrapper2">
+				Correct answer!
+			</div>
+    	<div class="button-wrapper3">
+    		<button ref="btnNext" class="next-question" @click="$emit('challenge:next')">Next</button>
+      </div>
+    </div>
+  </div>`
+});
+
+Vue.component('incorrect-answer', {
+    methods: {
+        refocus: function() {
+            this.$nextTick(() => this.$refs.btnNext.focus());
+        }
+    },
+    template: `
+  <div class="incorrect-answer">
+  	<div class="button-bar">
+			<div class="button-wrapper2">
+				Some text
+			</div>
+    	<div class="button-wrapper3">
+    		<button ref="btnNext" class="next-question" @click="$emit('challenge:next')">Next</button>
+    	</div>
+    </div>
+  </div>`
+});
+
+Vue.component('in-progress', {
+    inject: [ 'challenge' ],
+    methods: {
+        submitClicked: function() {
+            this.challenge.submitted = true;
+            this.$emit('answer:submitted');
+        }
+    },
+    template: `
+  <div class="in-progress">
+  	<div class="button-bar">
+			<div class="button-wrapper2">&nbsp;</div>
+      <div class="button-wrapper3">
+  			<button class="submit" @click="submitClicked">Submit</button>
+    	</div>
+    </div>
+  </div>`
+});
+
+var app = new Vue({
+    el: "#app",
+    data: {
+        challenge: {
+            submitted: false,
+            correct: false
+        }
+    },
+    created: function() {
+        // Create alias so that we can access it within the promise
+        var vm = this;
+
+        vm.loadData();
+    },
+    computed: {
+        showSuccess: function() { return this.challenge.submitted && this.challenge.correct; },
+        showFailure: function() { return this.challenge.submitted && !this.challenge.correct; },
+        showSubmit: function() { return !this.challenge.submitted; }
+    },
+    methods: {
+        onSubmit: function(data) {
+            this.challenge.submitted = true;
+            // decide whether answer is correct
+            this.challenge.correct = (data === "apple");
+
+            if (this.challenge.correct) {
+                this.$refs.correct.refocus();
+            } else {
+                this.$refs.incorrect.refocus();
+            }
+        },
+        onNext: function() {
+            this.challenge.submitted = false;
+            this.challenge.correct = false;
+            this.$refs.userInput.reset();
+        },
+        loadData: function() {
+            let vm = this;
+
+            fetch("/echo/html/")
+                .then(function(response) {
+                    console.log(response);
+                })
+        }
+    },
+    provide: function() {
+        return {
+            challenge: this.challenge
+        };
+    }
+});
 
 let crypto = window.crypto.subtle;
 

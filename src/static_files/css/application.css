@@ -1,134 +1,88 @@
-@import "nord.css";
+@import url("https://fonts.googleapis.com/css?family=Nunito&display=swap");
+* {
+  font-family: 'Nunito'; }
 
 body {
-    background-color: #f8f9fb;
-    font-family: Georgia, Garamond, serif;
-    padding: 0;
-    margin: 0;
-}
+  margin: 0;
+  padding: 0;
+  font-size: 18px; }
 
-.app-container {
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
+#app {
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column; }
 
-.app-header {
-    height: 100px;
-}
-
-.app-main {
-    display: flex;
+.exercise {
+  flex-grow: 1;
+  display: flex; }
+  .exercise .exercise-box {
+    max-width: 400px;
+    max-height: 600px;
     flex-grow: 1;
-    flex-direction: column;
-}
-
-.app-center-column {
-    max-width: 500px;
-    width: 100%;
     margin: auto;
-}
-
-.challenge-container {
     display: grid;
-    grid-gap: 20px;
-    grid-template-rows: min-content min-content 1fr;
-    align-items: center;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    max-height: 500px;
-}
+    grid-gap: 20px; }
+    .exercise .exercise-box .task {
+      width: 100%;
+      border-left: 4px solid #ccc;
+      padding-left: 5px;
+      font-size: 1.4rem; }
+    .exercise .exercise-box .question {
+      font-size: 1.2rem; }
 
-.challenge-task {
-    font-size: 36px;
-}
-
-.challenge-question {
-    padding-left: 5px;
-    font-size: 1.1em;
-    font-style: italic;
-}
-
-.challenge-answer {
-    display: flex;
-    min-height: 100px;
-}
-
-.challenge-answer textarea {
+.user-input {
+  display: flex;
+  flex-direction: column; }
+  .user-input textarea {
+    width: 100%;
     resize: none;
-    width: 100%;
-    padding: 14px;
-    outline: none;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 50px; }
 
-    font-family: Georgia, Garamond, serif;
-    font-size: 17px;
-    letter-spacing: inherit;
+.header {
+  color: #ddd;
+  font-size: 0.8em; }
 
-    color: #2E3440;
+.footer {
+  width: 100vw;
+  display: flex;
+  flex-direction: column; }
 
-    border: 1px solid darkgrey;
-    border-radius: 10px;
-}
+.correct-answer {
+  background-color: #a3be8c;
+  min-height: 100px; }
 
+.incorrect-answer {
+  background-color: #bf616a;
+  min-height: 100px; }
 
-.app-footer {
-    height: 100px;
-}
+.in-progress {
+  background-color: #ccc;
+  min-height: 100px; }
 
-.buttonbar {
-    max-width: 800px;
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    display: grid;
-    grid-template-columns: auto auto auto auto auto;
-    grid-template-rows: 100%;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.button-next {
-    grid-column: 5;
-}
-
-.button-verify {
-    grid-column: 5;
-}
-
-.buttonbar button {
-    padding: 16px;
+.button-bar {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  min-height: 100px;
+  align-items: center;
+  margin: auto;
+  max-width: 800px; }
+  .button-bar .button-wrapper1 {
+    grid-column: 1; }
+  .button-bar .button-wrapper2 {
+    grid-column: 3; }
+  .button-bar .button-wrapper3 {
+    grid-column: 5; }
+  .button-bar button {
     border: 0;
     border-radius: 10px;
-    font-family: sans-serif;
-    font-weight: bold;
-    font-size: 16px;
+    padding: 10px;
+    font-size: 0.8rem;
     outline: none;
-}
-
-.verify-input {
-    background-color: #A3BE8C;
-    color: #ECEFF4;
-}
-.verify-input {
-    background-color: #A3BE8C;
-    color: #ECEFF4;
-}
-
-.verify-input:disabled {
-    background-color: #c6c8ca;
-}
-
-.verify-input:hover {
-    filter: brightness(1.1);
-}
-
-.correct {
-    background-color: var(--nord14);
-}
-
-.incorrect {
-    background-color: var(--nord11);
-}
+    min-width: 70px; }
+    .button-bar button:focus {
+      outline: none; }
 

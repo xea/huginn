@@ -24,7 +24,6 @@ async fn main() -> std::io::Result<()> {
             // TODO The private key used for the cookie session needs a proper value.
             .wrap(CookieSession::private(&[0; 32]))
             .service(exercise_skill)
-            /*
             .service(
                 web::scope("/course")
                     .service(list_courses)
@@ -36,7 +35,6 @@ async fn main() -> std::io::Result<()> {
                     .service(show_lesson),
             )
             .service(web::scope("/challenge").service(next_batch))
-            */
             .service(
                 web::scope("/static")
                     // Application

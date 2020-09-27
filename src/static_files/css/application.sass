@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+
+$task-font-size: 1.4rem
+$question-font-size: 1.2rem
+$answer-font-size: 1rem
+
+$center-width: 400px
+
+*
+  font-family: 'Nunito'
+
+body
+  margin: 0
+  padding: 0
+  font-size: 18px
+
+
+#app
+  height: 100vh
+  margin: 0
+  display: flex
+  flex-direction: column
+
+.exercise
+  flex-grow: 1
+  display: flex
+
+  .exercise-box
+    max-width: $center-width
+    max-height: 600px
+    flex-grow: 1
+    margin: auto
+
+    display: grid
+    grid-gap: 20px
+
+    .task
+      width: 100%
+      border-left: 4px solid #ccc
+      padding-left: 5px
+      font-size: $task-font-size
+
+    .question
+      font-size: $question-font-size
+
+.user-input
+  display: flex
+  flex-direction: column
+
+  textarea
+    width: 100%
+    resize: none
+    padding: 10px
+    box-sizing: border-box
+    margin-bottom: 50px
+
+.header
+  color: #ddd
+  font-size: 0.8em
+
+.footer
+  width: 100vw
+  display: flex
+  flex-direction: column
+
+$status-min-height: 100px
+
+.correct-answer
+  background-color: #a3be8c
+  min-height: $status-min-height
+
+.incorrect-answer
+  background-color: #bf616a
+  min-height: $status-min-height
+
+.in-progress
+  background-color: #ccc
+  min-height: $status-min-height
+
+.button-bar
+  box-sizing: border-box
+  display: grid
+  grid-template-columns: auto auto auto auto auto
+  min-height: $status-min-height
+  align-items: center
+  margin: auto
+  max-width: 800px
+
+  .button-wrapper1
+    grid-column: 1
+
+  .button-wrapper2
+    grid-column: 3
+
+  .button-wrapper3
+    grid-column: 5
+
+  button
+    border: 0
+    border-radius: 10px
+    padding: 10px
+    font-size: 0.8rem
+    outline: none
+    min-width: 70px
+
+    &:focus
+      outline: none
